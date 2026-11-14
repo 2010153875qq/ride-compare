@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>打车比价 · 高德 花小猪 曹操 T3 小拉 哪家便宜</title>
+<meta name="description" content="输入起点终点，按各平台公开计价规则估算高德打车、花小猪、曹操出行、T3出行、小拉出行的车费，排出最便宜的一家；也能填入各 App 实际报价对比。开源免费。">
+<meta name="theme-color" content="#1a73ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="打车比价">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar"><div class="logo">🚕 打车比价</div><button class="ghost" id="btnSettings">⚙️ 设置</button></div>
+    <h1>打车前，<span>先算一算</span></h1>
+    <p class="sub">高德打车 · 花小猪 · 曹操出行 · T3出行 · 小拉出行，按公开计价规则估算谁最便宜</p>
+    <form id="routeForm" class="panel" autocomplete="off">
+      <div class="row2">
+        <label>城市<select id="city"></select></label>
+        <label class="grow">起点<input id="from" placeholder="如：福州火车站"></label>
+        <button type="button" class="swap" id="btnSwap" title="交换起终点">⇅</button>
+        <label class="grow">终点<input id="to" placeholder="如：三坊七巷"></label>
+      </div>
+      <div class="row2">
+        <label>距离（公里）<input id="km" type="number" step="0.1" min="0" inputmode="decimal" placeholder="自动或手填"></label>
+        <label>时长（分钟）<input id="min" type="number" step="1" min="0" inputmode="numeric" placeholder="自动或手填"></label>
+        <label>时段<select id="period"><option value="0">平峰</option><option value="0.5" selected>不确定（取中间）</option><option value="1">早晚高峰 / 夜间</option></select></label>
+        <button type="submit" class="go" id="btnCalc">算价格</button>
+      </div>
+      <p class="tip" id="routeTip"></p>
+    </form>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="resultSec" class="hidden">
+    <div class="sec-head"><h2>① 估算结果 <small id="routeLabel"></small></h2><span class="tag">估算 · 仅供参考</span></div>
+    <div class="best" id="bestBox"></div>
+    <div class="list" id="resultList"></div>
+    <p class="hint">估算 = 起步价 + 超出起步里程 × 里程费 + 超出起步时长 × 时长费 + 远途费。未含高速/路桥/停车费、动态调价、节假日服务费和优惠券；实际以各 App 下单页为准。</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>② 填入 App 实际报价，比真实价格</h2>
+      <div class="sec-actions"><button class="ghost" id="btnSaveQuote">保存这次</button><button class="ghost danger" id="btnClearQuote">清空</button></div>
+    </div>
+    <div class="best" id="quoteBest">在各 App 里输入同样的起终点，把看到的预估价（券后）填到下面。</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>平台</th><th>车型 / 备注</th><th class="num">App 报价¥</th><th class="num">优惠¥</th><th class="num">实付¥</th><th class="num">本站估算¥</th></tr></thead>
+      <tbody id="quoteBody"></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>③ 历史行程</h2><div class="sec-actions"><button class="ghost danger" id="btnClearHist">清空</button></div></div>
+    <div class="hist" id="histBox"></div>
+  </section>
+
+  <section class="faq">
+    <h2>说明与数据来源</h2>
+    <ul>
+      <li>这几家都<b>没有网页叫车</b>，本站不叫车、不收款，只帮你估价和比价；点「打开 App」或在微信里搜对应小程序下单。</li>
+      <li>自动算距离：在 <code>js/config.js</code> 填高德地图 JS API Key；不填就手动输入公里数和分钟数（可从地图 App 导航里看）。</li>
+      <li>计价规则放在 <code>data/pricing.json</code>，可以按自己城市修改、增加城市。</li>
+    </ul>
+    <ol id="srcList" class="src"></ol>
+  </section>
+</main>
+<footer class="wrap foot">开源免费 · <a href="ride-compare.zip" download>下载网站（zip）</a> · <a href="https://github.com/2010153875qq/ride-compare" target="_blank" rel="noopener">GitHub 源码</a> · <a href="https://zhourunzheng.com.cn" target="_blank" rel="noopener">zhourunzheng.com.cn</a></footer>
+
+<dialog id="dlgSettings"><form method="dialog">
+  <h3>设置</h3>
+  <label class="row"><input type="checkbox" id="cfgDidi"> 显示滴滴快车（对比参考）</label>
+  <label>高德 JS API Key（可选，仅保存在本机浏览器）<input id="cfgKey" placeholder="也可以直接写在 js/config.js"></label>
+  <label>高德安全密钥 securityJsCode<input id="cfgSec"></label>
+  <div class="dlg-actions"><button value="cancel" class="ghost">取消</button><button value="ok" class="primary" id="btnSaveCfg">保存</button></div>
+</form></dialog>
+<div id="iosHint" class="ios-hint hidden" role="status">
+  <button type="button" class="ios-hint-x" id="iosHintClose" aria-label="关闭">×</button>
+  <p>用 Safari 打开本页，点底栏「分享」按钮，再选「添加到主屏幕」，就能像 App 一样打开，没网也能用。</p>
+</div>
+<div class="toast" id="toast"></div>
+<script src="js/config.js"></script>
+<script src="data/pricing.js"></script>
+<script src="js/fare.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pwa.js"></script>
+</body>
+</html>

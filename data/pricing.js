@@ -1,0 +1,348 @@
+/* 自动生成，请改 pricing.json 后运行 node build-pricing.js */
+window.RIDE_PRICING = {
+  "_说明": "网约车计价规则（快车/经济型实时单）。所有结果均为【估算】，实际以 App 下单页为准。数组 [低, 高] 表示不同时段的区间（平峰→高峰/夜间）。long 为远途费：超过 from 公里（至 to 公里）的部分每公里加收 price 元。改价格只需改本文件，然后运行 `node build-pricing.js` 同步到 pricing.js（用于直接双击打开 index.html 的情况）。",
+  "updated": "2026-11-14",
+  "platforms": {
+    "amap": {
+      "name": "高德打车",
+      "short": "高",
+      "color": "#1a73ff",
+      "type": "aggregate",
+      "partners": [
+        "caocao",
+        "t3",
+        "amap_tehui"
+      ],
+      "desc": "聚合平台，可同时呼叫曹操、T3 和多家本地小平台（特惠快车）",
+      "download": "https://mobile.amap.com/",
+      "app": "amapuri://",
+      "mini": "高德打车"
+    },
+    "huaxiaozhu": {
+      "name": "花小猪",
+      "short": "猪",
+      "color": "#ff4f8b",
+      "desc": "滴滴旗下低价品牌",
+      "download": "https://www.huaxiaozhu.com/",
+      "mini": "花小猪打车"
+    },
+    "caocao": {
+      "name": "曹操出行",
+      "short": "曹",
+      "color": "#1fb8a6",
+      "desc": "吉利旗下，自营车辆",
+      "download": "https://www.caocaokeji.cn/",
+      "mini": "曹操出行"
+    },
+    "t3": {
+      "name": "T3出行",
+      "short": "T3",
+      "color": "#0b3d91",
+      "desc": "一汽/东风/长安合资，自营车辆",
+      "download": "https://www.t3go.cn/",
+      "mini": "T3出行"
+    },
+    "xiaola": {
+      "name": "小拉出行",
+      "short": "拉",
+      "color": "#ff7a00",
+      "desc": "货拉拉旗下，一口价不加价",
+      "download": "https://www.xiaolachuxing.com/",
+      "mini": "小拉出行"
+    },
+    "didi": {
+      "name": "滴滴快车",
+      "short": "滴",
+      "color": "#ff7e33",
+      "desc": "参考对比（可在设置里隐藏）",
+      "download": "https://www.didiglobal.com/",
+      "app": "diditaxi://",
+      "mini": "滴滴出行",
+      "optional": true
+    }
+  },
+  "cities": {
+    "通用": {
+      "label": "通用（全国常见水平，估算）",
+      "rules": {
+        "didi": {
+          "base": [
+            10,
+            11.5
+          ],
+          "baseKm": 3,
+          "baseMin": 6,
+          "perKm": [
+            1.45,
+            1.95
+          ],
+          "perMin": [
+            0.25,
+            0.48
+          ],
+          "long": [
+            {
+              "from": 10,
+              "to": 25,
+              "price": 0.34
+            },
+            {
+              "from": 25,
+              "price": 0.59
+            }
+          ],
+          "src": "fuzhou"
+        },
+        "huaxiaozhu": {
+          "base": [
+            9,
+            9
+          ],
+          "baseKm": 3,
+          "baseMin": 9,
+          "perKm": [
+            1.55,
+            2.25
+          ],
+          "perMin": [
+            0.28,
+            0.35
+          ],
+          "long": [
+            {
+              "from": 10,
+              "to": 20,
+              "price": 0.3
+            },
+            {
+              "from": 20,
+              "price": 0.6
+            }
+          ],
+          "src": "huaxiaozhu"
+        },
+        "caocao": {
+          "base": [
+            10.49,
+            12.49
+          ],
+          "baseKm": 3,
+          "baseMin": 8,
+          "perKm": [
+            1.3,
+            1.8
+          ],
+          "perMin": [
+            0.3,
+            0.5
+          ],
+          "long": [
+            {
+              "from": 15,
+              "to": 25,
+              "price": 0.26
+            },
+            {
+              "from": 25,
+              "price": 0.5
+            }
+          ],
+          "src": "fuzhou"
+        },
+        "t3": {
+          "base": [
+            10.49,
+            12
+          ],
+          "baseKm": 3.2,
+          "baseMin": 8,
+          "perKm": [
+            1.3,
+            1.7
+          ],
+          "perMin": [
+            0.3,
+            0.45
+          ],
+          "long": [
+            {
+              "from": 15,
+              "to": 25,
+              "price": 0.35
+            },
+            {
+              "from": 25,
+              "price": 0.6
+            }
+          ],
+          "src": "fuzhou"
+        },
+        "xiaola": {
+          "base": [
+            7,
+            8
+          ],
+          "baseKm": 3,
+          "baseMin": 10,
+          "perKm": [
+            0.9,
+            1.2
+          ],
+          "perMin": [
+            0.12,
+            0.2
+          ],
+          "long": [],
+          "fixed": true,
+          "src": "xiaola",
+          "note": "一口价；无官方公示单价，按媒体报道的 10 公里约 14–15 元反推，误差较大"
+        },
+        "amap_tehui": {
+          "base": [
+            9,
+            10.5
+          ],
+          "baseKm": 3,
+          "baseMin": 8,
+          "perKm": [
+            1.15,
+            1.62
+          ],
+          "perMin": [
+            0.14,
+            0.3
+          ],
+          "long": [
+            {
+              "from": 10,
+              "to": 30,
+              "price": 0.36
+            },
+            {
+              "from": 30,
+              "price": 0.53
+            }
+          ],
+          "src": "fuzhou",
+          "note": "高德「特惠快车」等本地小平台，参考福州公示的中小平台（如及时出行）规则"
+        }
+      }
+    },
+    "福州": {
+      "label": "福州（交通局 2026 年 5 月公示）",
+      "inherit": "通用",
+      "rules": {
+        "didi": {
+          "base": [
+            9.8,
+            11.3
+          ],
+          "baseKm": 3,
+          "baseMin": 6,
+          "perKm": [
+            1.41,
+            1.96
+          ],
+          "perMin": [
+            0.2,
+            0.48
+          ],
+          "long": [
+            {
+              "from": 10,
+              "to": 25,
+              "price": 0.34
+            },
+            {
+              "from": 25,
+              "price": 0.59
+            }
+          ],
+          "src": "fuzhou"
+        },
+        "caocao": {
+          "base": [
+            10.49,
+            12.49
+          ],
+          "baseKm": 3,
+          "baseMin": 8,
+          "perKm": [
+            1.3,
+            1.8
+          ],
+          "perMin": [
+            0.3,
+            0.5
+          ],
+          "long": [
+            {
+              "from": 15,
+              "to": 25,
+              "price": 0.26
+            },
+            {
+              "from": 25,
+              "price": 0.5
+            }
+          ],
+          "src": "fuzhou"
+        },
+        "t3": {
+          "base": [
+            10.49,
+            12
+          ],
+          "baseKm": 3.2,
+          "baseMin": 8,
+          "perKm": [
+            1.3,
+            1.7
+          ],
+          "perMin": [
+            0.3,
+            0.45
+          ],
+          "long": [
+            {
+              "from": 15,
+              "to": 25,
+              "price": 0.35
+            },
+            {
+              "from": 25,
+              "price": 0.6
+            }
+          ],
+          "src": "fuzhou"
+        }
+      }
+    }
+  },
+  "sources": {
+    "fuzhou": {
+      "title": "福州市交通运输局：福州市网约车平台价格一览表（五一期间，2026-04-30）",
+      "url": "https://fzjt.fuzhou.gov.cn/zwgk/ztzl/xygl/dlysgl/czcgl/202604/t20260430_5316350.htm"
+    },
+    "huaxiaozhu": {
+      "title": "汽车之家问答：花小猪起步价（9 元含 3 公里 9 分钟，1.55 元/公里，0.28 元/分钟，远途 10/20 公里加收）",
+      "url": "https://www.autohome.com.cn/ask/16116098.html"
+    },
+    "xiaola": {
+      "title": "BIA 新闻：网约车价格，被打下来了？（小拉出行 10 公里约 14–15 元）",
+      "url": "https://www.bianews.com/news/details?id=214016"
+    },
+    "t3": {
+      "title": "T3出行 计价规则页",
+      "url": "https://www.t3go.cn/fast-rule.html?ruleType=2"
+    },
+    "caocao": {
+      "title": "曹操出行开放平台 计价规则字段说明",
+      "url": "https://open.caocaokeji.cn/zh-cn/docs/caocao_open/travel/2.3queryPriceRule.html"
+    },
+    "amap": {
+      "title": "高德开放平台：网约车估价路径规划接口",
+      "url": "https://developer.amap.com/api/mobility-reference/server/beforeservice/price"
+    }
+  }
+};

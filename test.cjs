@@ -1,0 +1,40 @@
+const { chromium } = require('/workspace/snake-online/node_modules/playwright');
+const http = require('http'), fs = require('fs'), path = require('path');
+const root = '/workspace/ride-compare/site';
+const types = { html: 'text/html; charset=utf-8', css: 'text/css', js: 'application/javascript', json: 'application/json', webmanifest: 'application/manifest+json', png: 'image/png', svg: 'image/svg+xml' };
+const srv = http.createServer((q, s) => { let p = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (p.endsWith('/')) p += 'index.html'; fs.readFile(p, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': types[p.split('.').pop()] }); s.end(d); }); }).listen(8098);
+(async () => {
+  const b = await chromium.launch(); const errs = [];
+  const pg = await b.newPage({ viewport: { width: 1200, height: 900 } });
+  pg.on('pageerror', e => errs.push(e.message)); pg.on('console', m => m.type() === 'error' && errs.push(m.text()));
+  await pg.goto('http://localhost:8098/');
+  await pg.selectOption('#city', '福州');
+  await pg.fill('#from', '福州火车站'); await pg.fill('#to', '三坊七巷'); await pg.fill('#km', '8.5'); await pg.fill('#min', '22');
+  await pg.click('#btnCalc'); await pg.waitForSelector('.ritem');
+  const res = await pg.$$eval('.ritem', r => r.map(x => x.querySelector('.nm').textContent + ' ' + x.querySelector('.v').textContent + ' ' + x.querySelector('.rg').textContent));
+  console.log(res); console.log(await pg.textContent('#bestBox'));
+  const est = await pg.evaluate(() => RideApp.est.map(x => x.mid));
+  if (est.some((v, i) => i && v < est[i - 1])) throw new Error('not sorted');
+  // quotes
+  const q = async (id, k, v) => pg.fill(`#quoteBody tr[data-id=${id}] [data-k=${k}]`, String(v));
+  await q('amap', 'price', 19.8); await q('amap', 'note', '特惠快车');
+  await q('huaxiaozhu', 'price', 17.6); await q('caocao', 'price', 22.3); await q('caocao', 'coupon', 6);
+  await q('t3', 'price', 21); await q('xiaola', 'price', 16.9); await q('xiaola', 'coupon', 0);
+  const cheap = await pg.$eval('#quoteBody tr.cheapest', r => r.dataset.id); console.log('real cheapest:', cheap, await pg.textContent('#quoteBest'));
+  if (cheap !== 'caocao') throw new Error('quote cheapest wrong');
+  await pg.click('#btnSaveQuote');
+  await pg.evaluate(() => scrollTo(0, 0));
+  await pg.screenshot({ path: '/workspace/ride-compare/screenshot-desktop.png', fullPage: true });
+  // no-duration fallback + reload persistence
+  await pg.reload(); await pg.waitForSelector('.ritem');
+  console.log('hist:', await pg.$$eval('.hitem .t', t => t.map(x => x.textContent)));
+  await pg.fill('#min', ''); await pg.fill('#km', '30'); await pg.click('#btnCalc'); await pg.waitForTimeout(300);
+  console.log('tip:', await pg.textContent('#routeTip'), '| min=', await pg.inputValue('#min'));
+  const m = await b.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile' });
+  await m.goto('http://localhost:8098/');
+  await m.fill('#km', '12'); await m.fill('#min', '28'); await m.click('#btnCalc'); await m.waitForSelector('.ritem');
+  console.log('mobile app link amap:', await m.$eval('.ritem[data-id=amap] a.main', a => a.getAttribute('href')));
+  await m.evaluate(() => scrollTo(0, 0));
+  await m.screenshot({ path: '/workspace/ride-compare/screenshot-mobile.png', fullPage: true });
+  console.log('errors:', errs); await b.close(); srv.close();
+})().catch(e => { console.error('FAIL', e); process.exit(1); });

@@ -1,0 +1,26 @@
+{
+  "name": "打车比价",
+  "short_name": "打车比价",
+  "description": "高德打车、花小猪、曹操出行、T3出行、小拉出行按公开规则估算车费，对比哪家最便宜。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "zh-CN",
+  "theme_color": "#1a73ff",
+  "background_color": "#1a73ff",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
